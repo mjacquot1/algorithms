@@ -269,7 +269,6 @@ def delete_node(root, target):
                 parent_node = curr_node
                 curr_node = curr_node.right
 
-            
             # If the found node has a left side
             # set the parent_node's right to equal
             # the found node's left
@@ -278,13 +277,10 @@ def delete_node(root, target):
             # since curr_node.left may be none anyways
             parent_node.right = curr_node.left
 
-        # Elif there are left nodes
-        # Point parent_node left to them
-        elif curr_node.left:
-            parent_node.left = curr_node.left
-        # Else, just get rid of the left node
+        # Elif there may still be a lef node. 
+        # Set parent.left to it. If not, it will set to None
         else:
-            parent_node.left = None
+            parent_node.left = curr_node.left
 
         # Return highest val node on the branch
         return curr_node
@@ -313,71 +309,72 @@ def delete_node(root, target):
 
     parent_node = None
     curr_node = root
-    
+
+    # First find the node and track the parent
+    # If no node is found, it will return None.
     while curr_node:
-        if curr_node.val == target:
-            # If the node has a left and right child 
-            if curr_node.left and curr_node.right:
-                rep_node = find_replacement_node(curr_node)
-
-                # Set the replacement nodes left & right
-                # To point to deleted node's left & right
-                rep_node.left, rep_node.right = \
-                    curr_node.left, curr_node.right
-
-            # elif the node is a leaf with no children
-            elif not curr_node.left and not curr_node.right:
-                # Set the replacement node to be none
-                rep_node = None
-
-            # elif the node only has a left child
-            elif curr_node.left:
-                # Set the replacement node to be to the left
-                rep_node = curr_node.left
-
-            # elif the child only has a right child
-            elif curr_node.right:
-                # Set the replacement node to be to the right
-                rep_node = curr_node.right
-            
-            # Run point_parent to point the parent node
-            # To the proper replacement
-            # Whether that be another node, or none at all
-            point_parent(curr_node, parent_node, rep_node)
-
-            # Remove links that curr_node has
-            curr_node.left = curr_node.right = None
-
-            # If there isn't a parent,
-            # the replacement node is the new root
-            if parent_node == None:
-                root = rep_node
-
-            return root
-                
-        # Now that we're done checking curr_node
-        # Set the parent node to curr_node
-        parent_node = curr_node
-
         # if curr_node.val < target
         # Go to the right
         if curr_node.val < target:
-            curr_node = curr_node.right
+            parent_node, curr_node \
+            = curr_node, curr_node.right
 
         # if curr_node.val > target
         # Go to the left
         elif curr_node.val > target:
-            curr_node = curr_node.left
+            parent_node, curr_node \
+            = curr_node, curr_node.left
+        
+        # if curr_node.val == target
+        # we found it!
+        elif curr_node.val == target:
+            break
+
+
+    # If the target has been found
+    if curr_node:
+        # If the node has a left and right child 
+        if curr_node.left and curr_node.right:
+            rep_node = find_replacement_node(curr_node)
+
+            # Set the replacement nodes left & right
+            # To point to deleted node's left & right
+            rep_node.left, rep_node.right = \
+                curr_node.left, curr_node.right
+
+        else:
+            # Now there is either no children
+            # or one child.
+            # Set rep_node to equal either one of the
+            # children, or neither.
+            rep_node = curr_node.left or curr_node.right
+        
+        # Run point_parent to point the parent node
+        # to the proper replacement.
+        # Whether that be another node, or none at all
+        point_parent(curr_node, parent_node, rep_node)
+
+        # If there isn't a parent,
+        # the replacement node is the new root
+        if parent_node == None:
+            root = rep_node
+
+        # Remove links that curr_node has
+        # for garbage collection
+        curr_node.left = curr_node.right = None
+
+        return root
 
     return root
 
 
 
 if __name__ == '__main__':
-    root = complex_test_tree_root()
-    print(in_order_traversal_iterative(root))
-    print(pre_order_traversal_iterative(root))
-    print(breadth_first_traversal(root))
-    root = delete_node(root, 7)
-    print(breadth_first_traversal(root))
-
+    # root = complex_test_tree_root()
+    # print(in_order_traversal_iterative(root))
+    # print(pre_order_traversal_iterative(root))
+    # print(breadth_first_traversal(root))
+    # root = delete_node(root, 7)
+    # print(breadth_first_traversal(root))
+    test = None or None
+    print( None or None)
