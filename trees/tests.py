@@ -48,3 +48,19 @@ def complex_test_tree_root():
         bst_insert(root, i)
 
     return root
+
+def edge_cases():
+    arrs = [
+            [4,7,6,8,5,9]
+            [2,1]
+            [1,2]
+            [0]
+        ]
+
+    deletes = [7,1,1,0]
+
+    # # root = Node(10)
+    # for i in arr:
+    #     bst_insert(root, i)
+
+    # return root
