@@ -123,6 +123,44 @@ def is_palindrome(s):
     # Keep shrinking
     return is_palindrome(s[1:-1])
 
+def to_binary(num):
+    
+    # base cases
+    # 1. num // 2 == 0
+    if num // 2 == 0:
+        return str(num%2)
+    
+    return (to_binary(num//2) + str(num%2))
+
+def find_binary_search(arr, target, low, high):
+
+    mid = low + (high-low)//2
+
+    # Base cases
+    # 1. Search window is shrunk to 0
+    # 1. target is found
+    if low >= high:
+        return False
+    
+    if arr[mid] == target:
+        return True
+
+    # go right
+    elif arr[mid] < target:
+        return find_binary_search(arr, target, mid+1, high)
+
+    #go left
+    elif arr[mid] > target:
+        return find_binary_search(arr, target, low, mid)
+
+def fibonacci(num):
+
+    if num <= 1:
+        return num
+    
+    return fibonacci(num-1) + fibonacci(num-2)
+
+
 
 # print(sum_all_integers(-4, 5))
 matrix = [
@@ -132,8 +170,8 @@ matrix = [
 ]
 
 arr = [0,1,2,3,4,5,6,7,8,9]
-str = '1,2,3,4,5,6,7,8,9,0'
-print(string_reversal(str))
+strs = '1,2,3,4,5,6,7,8,9,0'
+# print(string_reversal(strs))
 # print (array_reversal(arr))
 
 palins = [
@@ -144,8 +182,14 @@ palins = [
     'baa',
 ]
 
-for i in palins:
-    print(is_palindrome(i))
+# print(find_binary_search(arr, 10, 0, len(arr)))
+
+# for i in palins:
+#     print(is_palindrome(i))
+
+# binary_num = 2
+# print(to_binary(2))
+# binary = to_binary(2)
 
 # ret_paths = []
 # unique_paths(matrix, 0, 0, (0,0), [], ret_paths, set())
