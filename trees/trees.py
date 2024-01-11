@@ -1,6 +1,6 @@
 from collections import deque
 
-from tests import simple_test_tree_root, complex_test_tree_root
+from tests import simple_test_tree_root, complex_test_tree_root, edge_cases, test_delete, test_tree_sum
 
 def compare_trees_recursive(p, q):
 
@@ -248,8 +248,8 @@ def breadth_first_traversal(root):
     return ret_stack
 
                 
-def path_to_target_root(curr_node, target, route, path):  
-    ''' ------------- WRONG --------------------'''
+def path_to_target_iterate(curr_node, target, path, ret_path):  
+    ''' Find route from root to target'''
     # Base case
     # 1. Node is none
     # 2. Node is target
@@ -257,26 +257,25 @@ def path_to_target_root(curr_node, target, route, path):
     if not curr_node:
         return
     
-    # Append the current node to the route
-    route.append(curr_node.val)
+    # Append the current node to the path
+    path.append(curr_node.val)
 
-    # Make a deep copy of route to path
+    # Make a deep copy of path to ret_path
     # if curr_node.val == target
     if curr_node.val == target:
-        for i in route:
-            path.append(i)
+        for i in path:
+            ret_path.append(i)
     
     # Go left then right
-    path_to_target_root(curr_node.left, target,route, path)
-    path_to_target_root(curr_node.right, target,route, path)
+    path_to_target_iterate(curr_node.left, target, path, ret_path)
+    path_to_target_iterate(curr_node.right, target, path, ret_path)
     
     # If the target isn't on the left or right branches
-    # pop this node from the route
-    route.pop()
+    # pop this node from the path
+    path.pop()
 
 
-
-def delete_node(root, target):
+def delete_node_iterate(root, target, *args):
 
     def find_replacement_node(root):
         ''' go left, then farthest right '''
@@ -404,15 +403,156 @@ def delete_node(root, target):
 
     return root
 
+def delete_node_recursion(curr_node, target, parent_node=None):
 
+    # First find deletion node
+    # Find replacement node
+    # Return root, new if necessary
+
+    def go_farthest_right(curr_node, parent_node):
+        
+        # Base cases
+        # 1. None passed in
+        # 2. No node on the right
+        # 3. Right-most node has no children
+        # 4. Right-most node has left children
+        if not curr_node.right:
+            # If curr_node has a left child
+            # parent_node.right will point to it
+            # If no child, parent_node.right
+            # Points to None
+            parent_point(curr_node, parent_node)
+            
+            return curr_node.val
+        
+        
+        return go_farthest_right(curr_node.right, curr_node)
+
+    def parent_point(curr_node, parent_node):
+        if parent_node:
+                child = (curr_node.left or curr_node.right)
+                if curr_node.val > parent_node.val:
+                    parent_node.right = child 
+                elif curr_node.val <= parent_node.val:
+                    parent_node.left = child 
+
+    # Base case
+    # 1. Node is None
+    # 2. Deletion node found
+
+    if not curr_node:
+        return
+    
+    if curr_node.val == target:
+        ## Run deletion
+        # If kids find largest value on left branch
+        if curr_node.left and curr_node.right:
+            curr_node.val = go_farthest_right(curr_node.left, curr_node)
+            del curr_node 
+        elif not parent_node:
+            new_root = curr_node.left or curr_node.right
+            del curr_node
+            return new_root
+        else:
+            parent_point(curr_node, parent_node)
+
+    return (delete_node_recursion(curr_node.left, target, curr_node)
+            or delete_node_recursion(curr_node.right, target, curr_node))
+
+
+def tree_sum_recursion(curr_node):
+
+    # base case
+    # If you hit None, return 0
+    if not curr_node:
+        return 0
+    
+    # val_sum is the sum of the left and right branches
+    val_sum = (tree_sum_recursion(curr_node.left) \
+               + tree_sum_recursion(curr_node.right))
+
+    # Add on the curr_node val and return
+    return val_sum + curr_node.val
+
+def tree_sum_iterate(curr_node):
+    if not curr_node:
+        return 0
+    
+    stack = [curr_node]
+    ret_sum = 0
+    while stack:
+        curr_node = stack.pop()
+        ret_sum += curr_node.val 
+        if curr_node.left:
+            stack.append(curr_node.left)
+        if curr_node.right:
+            stack.append(curr_node.right)
+
+    return ret_sum
+
+def find_max_val_recursion(curr_node):
+    
+    # Base case
+    # if you hit none, return
+    if not curr_node:
+        return
+    
+    return max(curr_node.val,
+               (find_max_val_recursion(curr_node.left) or float('-inf')),
+               (find_max_val_recursion(curr_node.right) or float('-inf')))
+
+def find_max_val_iterate(curr_node):
+
+    if not curr_node:
+        return
+    
+    stack = [curr_node]
+    ret_max = float('-inf')
+
+    while stack:
+        curr_node = stack.pop() 
+        ret_max = max(curr_node.val, ret_max)
+        if curr_node.left:
+            stack.append(curr_node.left)
+        if curr_node.right:
+            stack.append(curr_node.right)
+
+    return ret_max
+
+def max_root_to_leaf_recursive(curr_node, path, ret_path):
+    
+    # Base case
+    # 1. If not curr_node, return None
+    if not curr_node:
+        return
+    
+    if not curr_node.left and not curr_node.right:
+        if len(path) > len(ret_path):
+            ret_path.clear()
+            for i in path:
+                ret_path.append(i)
+    
+    path.append(curr_node.val)
+    max_root_to_leaf_recursive(curr_node.left, path, ret_path)
+    max_root_to_leaf_recursive(curr_node.right, path, ret_path)
+    path.pop()
 
 if __name__ == '__main__':
     root = complex_test_tree_root()
-    print(in_order_traversal_iterative(root))
-    print(pre_order_traversal_iterative(root))
+    # print(in_order_traversal_iterative(root))
+    # print(pre_order_traversal_iterative(root))
+    # print(breadth_first_traversal(root))
+    # root = delete_node_iterate(root, 7)
+    # print(breadth_first_traversal(root))
+    # path = []
+    # path_to_target_iterate(root, 8, [], path)
+    # print(path)
+    # test_delete(delete_node_iterate,breadth_first_traversal)
+    # test_delete(delete_node_recursion,breadth_first_traversal)
+    # test_tree_sum(find_max_val_iterate, breadth_first_traversal)
+    ret_path = []
     print(breadth_first_traversal(root))
-    root = delete_node(root, 7)
-    print(breadth_first_traversal(root))
-    path = []
-    path_to_target_root(root, 8, [], path)
-    print(path)
+    max_root_to_leaf_recursive(root, [], ret_path)
+    print(ret_path)
+
+    

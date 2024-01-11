@@ -153,12 +153,17 @@ def find_binary_search(arr, target, low, high):
     elif arr[mid] > target:
         return find_binary_search(arr, target, low, mid)
 
-def fibonacci(num):
+def fibonacci_sum(num):
 
     if num <= 1:
         return num
     
-    return fibonacci(num-1) + fibonacci(num-2)
+    return fibonacci_sum(num-1) + fibonacci_sum(num-2)
+
+
+
+
+
 
 
 
@@ -182,7 +187,7 @@ palins = [
     'baa',
 ]
 
-# print(find_binary_search(arr, 10, 0, len(arr)))
+# print(fibonacci_sum(arr, 10, 0, len(arr)))
 
 # for i in palins:
 #     print(is_palindrome(i))

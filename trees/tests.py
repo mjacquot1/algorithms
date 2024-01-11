@@ -51,16 +51,55 @@ def complex_test_tree_root():
 
 def edge_cases():
     arrs = [
-            [4,7,6,8,5,9]
-            [2,1]
-            [1,2]
-            [0]
+            [4,7,6,8,5,9,1],
+            [2,1],
+            [1,2],
+            [1],
         ]
 
-    deletes = [7,1,1,0]
+    # root = Node(10)
+    # for arr in arrs:
 
-    # # root = Node(10)
-    # for i in arr:
     #     bst_insert(root, i)
 
     # return root
+
+def test_delete(del_func, print_func, *args):
+    tests = [
+        ([4,7,6,8,5,9,1], 1),
+        ([2,1], 1),
+        ([1,2], 1),
+        ([1], 1),
+    ]
+
+    while tests:
+        arr, target = tests.pop()
+        root = Node(arr[0])
+
+        for i in arr[1:len(arr)]:
+            
+            bst_insert(root, i)
+
+        print('---------------------------')
+        print('Before: ', print_func(root))
+        new_root = del_func(root, target)
+        root = new_root #if new_root else root
+        print('After:  ', print_func(root))
+
+def test_tree_sum(sum_function, print_func, *args):
+    tests = [
+            [4,7,6,8,5,9,1],
+            [2,1],
+            [1,2],
+            [1],
+        ]
+    
+    while tests:
+        arr = tests.pop()
+        root = Node(arr[0])
+
+        for i in arr[1:len(arr)]:
+            bst_insert(root, i)
+
+        print('Tree: ', print_func(root))
+        print(sum_function(root, *args))
