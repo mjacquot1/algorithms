@@ -5,7 +5,7 @@ def bubble_sort(arr, *args):
         for i in range(0, len(arr)-1-x):
             if arr[i] > arr[i+1]:
                 arr[i], arr[i+1] = arr[i+1], arr[i]
-                
+
 def merge_sort_recursive(arr, low, high):
     def merge(arr, low, high):
         temp_arr = []
@@ -46,8 +46,116 @@ def merge_sort_recursive(arr, low, high):
         merge_sort_recursive(arr, mid+1, high)
         merge(arr, low, high)
 
-test_cases(merge_sort_recursive)
+def quick_sort_recursive(arr, low, high):
+    ''' O(nlogn) usually, n^2 if in a reverse sorted array and pivot is 'high' '''
+    
+    def partition(arr, low, high):
+        ''' Return pivot index '''
+        
+        # Choose middle element as pivot
+        mid = low + (high-low)//2
+        pivot = arr[mid]
+        
+        # The element we will swap with
+        swap = low
+        
+        # Swap mid and high values
+        # to get the pivot out of the way
+        arr[mid], arr[high] = arr[high], arr[mid]
+        
+        # Go from low up until before the pivot
+        # (which is now at index high)
+        for i in range(low, high):
+            # If arr[i] <= pivot, send it
+            # to the swap and then swap += 1
+            if arr[i] <= pivot:
+                arr[i], arr[swap] = arr[swap], arr[i]
+                swap += 1
+        
+        # Then swap the pivot between swap index and high
+        # (We know arr[swap] > pivot by this point)
+        arr[swap], arr[high] = arr[high], arr[swap]
+    
+        return swap
+    
+    # Base case is if low and high meet
+    if low >= high:
+        return
+    
+    # Get the middle point
+    pivot_index = partition(arr, low, high)
+    
+    # Recurse on the left of the pivot
+    quick_sort_recursive(arr, low, pivot_index-1)
+    
+    # Recurse on the right of the pivot
+    quick_sort_recursive(arr, pivot_index+1, high)
+
+def quick_sort_iterative(arr, *args):
+    ''' O(nlogn) usually, n^2 if in a reverse sorted array and pivot is 'high' '''
+    
+    def partition(arr, low, high):
+        ''' Return pivot index '''
+        
+        # Choose middle element as pivot
+        mid = low + (high-low)//2
+        pivot = arr[mid]
+        
+        # The element we will swap_index with
+        # will start 1 before 'low'
+        # And cover any 1 element arrays
+        swap_index = low - 1
+        
+        # swap_index mid and high values
+        # to get the pivot out of the way
+        arr[mid], arr[high] = arr[high], arr[mid]
+        
+        # Go from low up until before the pivot
+        # (which is now at index high)
+        for i in range(low, high):
+            # If arr[i] <= pivot, send it
+            # to the swap_index index after swap_index += 1
+            if arr[i] <= pivot:
+                swap_index += 1
+                arr[i], arr[swap_index] = arr[swap_index], arr[i]
+                    # Increment swap_index one last time
+                    
+        # Then swap_index the pivot between swap_index index and high
+        # (We know arr[swap_index] > pivot by this point)
+        swap_index += 1
+        arr[swap_index], arr[high] = arr[high], arr[swap_index]
+    
+        return swap_index
+    
+    # Declare the low & high here to start with
+    low, high = 0, len(arr) - 1
+    
+    # Append the low & high as a tuple
+    # We will be grabbing them and modifying them
+    stack = [(low, high)]
+    
+    while stack:
+        # Retrieve lo & high from the top of the stack
+        low, high = stack.pop()
+        
+        # if low < high, then the sort window > 1 element
+        if low < high:
+            # Get the 'partition_index' where:
+            # All to the left is < arr[partition_index]
+            # all to the right is > arr[partition_index]
+            partition_index = partition(arr, low, high)
+            
+            # Append the right window bounds
+            stack.append((partition_index+1, high))
+            
+            # Append the left window bounds
+            stack.append((low, partition_index-1))
+        
+
+
+# test_cases(merge_sort_recursive)
 # test_cases(bubble_sort)
+test_cases(quick_sort_iterative)
 
 
 
