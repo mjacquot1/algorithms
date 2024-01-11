@@ -119,13 +119,13 @@ def in_order_traversal_recursive(root):
         return
     
     # Work all the way down left
-    in_order_traversal(root.left)
+    in_order_traversal_recursive(root.left)
     
     # If Done, print root.val
     print(root.val)
     
     # Then work down the right
-    in_order_traversal(root.right)
+    in_order_traversal_recursive(root.right)
 
 def in_order_traversal_iterative(root):
     
@@ -247,6 +247,35 @@ def breadth_first_traversal(root):
         
     return ret_stack
 
+                
+def path_to_target_root(curr_node, target, route, path):  
+    ''' ------------- WRONG --------------------'''
+    # Base case
+    # 1. Node is none
+    # 2. Node is target
+
+    if not curr_node:
+        return
+    
+    # Append the current node to the route
+    route.append(curr_node.val)
+
+    # Make a deep copy of route to path
+    # if curr_node.val == target
+    if curr_node.val == target:
+        for i in route:
+            path.append(i)
+    
+    # Go left then right
+    path_to_target_root(curr_node.left, target,route, path)
+    path_to_target_root(curr_node.right, target,route, path)
+    
+    # If the target isn't on the left or right branches
+    # pop this node from the route
+    route.pop()
+
+
+
 def delete_node(root, target):
 
     def find_replacement_node(root):
@@ -300,12 +329,13 @@ def delete_node(root, target):
             elif child_node.val > parent_node.val:
                 parent_node.right = rep_node
 
-    # Cases:
-    # Node is a leaf
-    # Node has a left
-    # Node has a right
-    # Node has both
-    # Node is the root
+    # Steps
+    # 1. Find the node for deletion, keep track of it's parent
+    # 2. Find the largest value node to the left of the deletion node,
+    #       move that node out, point it's parent to it's left child
+    # 3. Replace node with the largest-to-the-left node
+    # 4. Swap pointers for the parent node to point to replacement
+    # 5. If there's no parent, return the replacement node
 
     parent_node = None
     curr_node = root
@@ -333,6 +363,13 @@ def delete_node(root, target):
 
     # If the target has been found
     if curr_node:
+        
+        # Cases:
+        # Node has left & right
+        # Node has neither
+        # Node has a left or a right
+        # Node is the root
+
         # If the node has a left and right child 
         if curr_node.left and curr_node.right:
             rep_node = find_replacement_node(curr_node)
@@ -348,16 +385,16 @@ def delete_node(root, target):
             # Set rep_node to equal either one of the
             # children, or neither.
             rep_node = curr_node.left or curr_node.right
-        
-        # Run point_parent to point the parent node
-        # to the proper replacement.
-        # Whether that be another node, or none at all
-        point_parent(curr_node, parent_node, rep_node)
 
         # If there isn't a parent,
         # the replacement node is the new root
         if parent_node == None:
             root = rep_node
+        
+        # Run point_parent to point the parent node
+        # to the proper replacement.
+        # Whether that be another node, or none at all
+        point_parent(curr_node, parent_node, rep_node)
 
         # Remove links that curr_node has
         # for garbage collection
@@ -370,11 +407,12 @@ def delete_node(root, target):
 
 
 if __name__ == '__main__':
-    # root = complex_test_tree_root()
-    # print(in_order_traversal_iterative(root))
-    # print(pre_order_traversal_iterative(root))
-    # print(breadth_first_traversal(root))
-    # root = delete_node(root, 7)
-    # print(breadth_first_traversal(root))
-    test = None or None
-    print( None or None)
+    root = complex_test_tree_root()
+    print(in_order_traversal_iterative(root))
+    print(pre_order_traversal_iterative(root))
+    print(breadth_first_traversal(root))
+    root = delete_node(root, 7)
+    print(breadth_first_traversal(root))
+    path = []
+    path_to_target_root(root, 8, [], path)
+    print(path)
