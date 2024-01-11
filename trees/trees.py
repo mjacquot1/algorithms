@@ -248,7 +248,7 @@ def breadth_first_traversal(root):
     return ret_stack
 
                 
-def path_to_target_iterate(curr_node, target, path, ret_path):  
+def path_to_target_recurse(curr_node, target, path, ret_path):  
     ''' Find route from root to target'''
     # Base case
     # 1. Node is none
@@ -267,8 +267,8 @@ def path_to_target_iterate(curr_node, target, path, ret_path):
             ret_path.append(i)
     
     # Go left then right
-    path_to_target_iterate(curr_node.left, target, path, ret_path)
-    path_to_target_iterate(curr_node.right, target, path, ret_path)
+    path_to_target_recurse(curr_node.left, target, path, ret_path)
+    path_to_target_recurse(curr_node.right, target, path, ret_path)
     
     # If the target isn't on the left or right branches
     # pop this node from the path
