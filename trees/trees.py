@@ -519,23 +519,155 @@ def find_max_val_iterate(curr_node):
 
     return ret_max
 
-def max_root_to_leaf_recursive(curr_node, path, ret_path):
+def longest_root_to_leaf_recursive(curr_node, path, ret_path):
     
     # Base case
     # 1. If not curr_node, return None
+    # 2. Leaf is found
     if not curr_node:
         return
     
+    path.append(curr_node.val)
+
     if not curr_node.left and not curr_node.right:
         if len(path) > len(ret_path):
             ret_path.clear()
             for i in path:
                 ret_path.append(i)
     
-    path.append(curr_node.val)
-    max_root_to_leaf_recursive(curr_node.left, path, ret_path)
-    max_root_to_leaf_recursive(curr_node.right, path, ret_path)
+    longest_root_to_leaf_recursive(curr_node.left, path, ret_path)
+    longest_root_to_leaf_recursive(curr_node.right, path, ret_path)
     path.pop()
+
+def max_root_to_leaf_sum_recursion(curr_node, running_sum=0, max_sum = float('-inf')):
+
+    # Base case
+    # 1. If not curr_node
+    # 2. Leaf is found
+    if not curr_node:
+        return float('-inf')
+    
+    running_sum += curr_node.val
+    
+    if not curr_node.left and not curr_node.right:
+        return max(running_sum, max_sum)
+
+
+    return max(max_root_to_leaf_sum_recursion(curr_node.left, 
+                                            running_sum, max_sum),
+                max_root_to_leaf_sum_recursion(curr_node.right, 
+                                            running_sum, max_sum))
+
+def lowest_common_ancestor_recursive(curr_node, 
+                                     node_1, 
+                                     node_2, 
+                                     common_ancestor):
+
+    # Base Cases:
+    # 1. Not curr_node
+    # 2. One is on left, other is on right
+    # 3. Equals one, not found the other
+    # 4. Equals one, found the other
+
+    # 1
+    if not curr_node:
+        return False
+
+    # Set 3 flags: A target node s on the left, on the right
+    #   or is the current node
+
+    # Set left & right to equal recursions
+    # This will check to see if a target note is found on the left side
+    left = lowest_common_ancestor_recursive(curr_node.left, 
+                                            node_1, 
+                                            node_2, 
+                                            common_ancestor)
+
+    # This will check to see if a target note is found on the right side
+    right = lowest_common_ancestor_recursive(curr_node.right,
+                                             node_1,
+                                             node_2,
+                                             common_ancestor)
+
+    # This will check to see if the current node
+    #   equals any of the target values
+    found_node = (curr_node.val == node_1.val or curr_node.val == node_2.val)
+
+    # Remember: True == 1, False == 0
+    # If 2 flags are set, then both target nodes have been found
+    if (found_node + left + right) >= 2:
+
+        # Return the current node because these causes fave been met:
+        # 1. Current node is a target, and the left side has a target
+        # 2. Current node is a target, and the right side has a target
+        # 3. Current node is not a target, but the left side has one
+        # and so does the right side
+        common_ancestor.append(curr_node)
+        
+    # If any flag is true, a target has been found. Return True.
+    return found_node or left or right
+
+def lowest_common_ancestor_iterate(curr_node, 
+                                     node_1, 
+                                     node_2):
+    if not root:
+        return
+
+    # Flag to break when both nodes are found
+    targets_found = False
+
+    # Stack to traverse nodes
+    # Each stack element: (node, parent, row #) 
+    stack = [(root, None, 0)]
+
+    # Hash to keep track of node & parent information  
+    node_hash = {}
+
+    while stack:
+        # Get node from the top of the stack
+        curr_node, parent_node, row_num = stack.pop()
+
+        # Put that node in the hash, save it's parent and row number
+        node_hash[curr_node] = {'parent':parent_node, 'row_num':row_num}
+
+        # If both target nodes are now in the hash,
+        # they have both been found. 
+        # Set targets_found = True and stop looking.
+        if node_1 in node_hash and node_2 in node_hash:
+            targets_found = True
+            break
+
+        if curr_node.left:
+            stack.append((curr_node.left, curr_node, row_num+1))
+        if curr_node.right:
+            stack.append((curr_node.right, curr_node, row_num+1))
+    
+    # If the tree has both target nodes in them
+    if targets_found:
+        # If node_1 is on a deeper tree level than node_2,
+        # keep going up it's parents until its on the same level as node_2
+        while node_hash[node_1]['row_num'] > node_hash[node_2]['row_num']:
+            node_1 = node_hash[node_1]['parent']
+
+
+        # If node_2 is on a deeper tree level than node_1,
+        # keep going up it's parents until its on the same level as node_1
+        while node_hash[node_2]['row_num'] > node_hash[node_1]['row_num']:
+            node_2 = node_hash[node_2]['parent']
+
+        # Now that we know both nodes are on the same tree level
+        # Keep going up both their parents until they converge
+        while node_1 != node_2:
+            node_1 = node_hash[node_1]['parent']
+            node_2 = node_hash[node_2]['parent']
+
+        # Once the nodes have converged,
+        # return either node.
+        return node_1
+    
+    # If the tree does not have both target nodes in them,
+    # their is no common ancestor.
+    return None
 
 if __name__ == '__main__':
     root = complex_test_tree_root()
@@ -550,9 +682,11 @@ if __name__ == '__main__':
     # test_delete(delete_node_iterate,breadth_first_traversal)
     # test_delete(delete_node_recursion,breadth_first_traversal)
     # test_tree_sum(find_max_val_iterate, breadth_first_traversal)
-    ret_path = []
+    
     print(breadth_first_traversal(root))
-    max_root_to_leaf_recursive(root, [], ret_path)
+    ret_path = []
+    longest_root_to_leaf_recursive(root, [], ret_path)
     print(ret_path)
+    print(max_root_to_leaf_sum_recursion(root))
 
     
