@@ -152,10 +152,38 @@ def quick_sort_iterative(arr, *args):
             stack.append((low, partition_index-1))
         
 
+def counting_sort(arr, max_k, *args):
+    ''' Efficient when range of input data is not much bigger than
+        the number of objects to be sorted '''
+
+    # Create an array the size of the largest possible value + 1
+    freq_arr = [0]*max_k+1
+
+    # Create an array to hold sorted values.
+    # Make it the length of passed array
+    sorted_arr = [None]*len(arr)
+
+    # Using the index, count how often a value is seen
+    # Example: if i == 2, freq_arr[2] += 1 
+    for i in arr: 
+        freq_arr[i] += 1
+    
+    # Step through freq_arr, each value should equal
+    # It's current count plus the previous element count
+    for i in range(1, len(freq_arr)):
+        freq_arr[i] = freq_arr[i] + freq_arr[i-1] 
+
+    # Then step through arr.
+    # And place values into new sorted array
+    for i in arr:
+        freq_arr[i] -= 1
+        sorted_arr[freq_arr[i]] = i
+
+    arr = sorted_arr
 
 # test_cases(merge_sort_recursive)
 # test_cases(bubble_sort)
-test_cases(quick_sort_iterative)
+test_cases(counting_sort, 10**5)
 
 
 

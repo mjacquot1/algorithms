@@ -247,6 +247,53 @@ def breadth_first_traversal(root):
         
     return ret_stack
 
+def turn_tree_to_doubly_linked_list_iterate(root):
+    if not root:
+        return
+
+    stack = []
+
+    # Keep track of the first node found (left-most)
+    # and the last node encountered
+    first_vis, last_vis = None, None
+
+    curr_node = root
+    while True:
+        if curr_node:
+            # Used to find left-most nodes
+            stack.append(curr_node)
+            curr_node = curr_node.left
+
+        elif stack:
+            curr_node = stack.pop()
+
+            if curr_node:
+                # Now that we have a node 
+                # that we know exists In-order
+                # If a node has been visited already
+                # It's the previous In-order
+                if last_vis:
+                    # Substitute "next" with "right"
+                    last_vis.right = curr_node
+
+                    #Subsitute "previous" with left
+                    curr_node.left = last_vis
+                
+                # Else, this is the first node visited
+                else:
+                    first_vis = curr_node
+                
+                # Set this node to the last-visited
+                last_vis = curr_node
+
+            curr_node = curr_node.right
+
+        else:
+            break
+
+    first_vis.left, last_vis.right = last_vis, first_vis
+    return first_vis
+
                 
 def path_to_target_recurse(curr_node, target, path, ret_path):  
     ''' Find route from root to target'''
@@ -668,6 +715,7 @@ def lowest_common_ancestor_iterate(curr_node,
     # If the tree does not have both target nodes in them,
     # their is no common ancestor.
     return None
+
 
 if __name__ == '__main__':
     root = complex_test_tree_root()

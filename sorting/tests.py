@@ -15,5 +15,5 @@ def test_cases(passed_function, *args):
     
     
     for arr in arrs:
-        passed_function(arr, 0, len(arr)-1)
+        passed_function(arr, *args)
         print(arr)
