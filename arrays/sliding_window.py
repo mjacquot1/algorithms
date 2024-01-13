@@ -1,24 +1,9 @@
 from collections import defaultdict, deque
+import collections
 
 from tests import peaks_valleys, strings, nums
 
 from collections import deque
-def permutation(q):
-    if len(q) == 1:
-        return [[q[0]]]
-
-    result = []
-    for i in range(len(q)):
-        num = q.popleft()
-        perms = permutation(q)
-
-        for perm in perms:
-            perm.append(num)
-        result = result + perms
-        
-        q.append(num)
-    print(result)
-    return result
 
 def buy_sell_stock(arr):
     # We are assuming 
@@ -235,8 +220,74 @@ def count_longest_substring_with_k_replacements(s, k):
 
     return max_len
 
-def find_anagrams_of_p(s, p):
-    pass
+def find_anagrams_of_p(s, sub):
+    # If the len of the string is less than
+    # the substring, it can't have an anagram
+    if len(s) < len(sub):
+        return []
+
+    # sub_count is a has counting each character in substring
+    sub_count = collections.Counter(sub)
+    # windows_char will count characters in window
+    window_chars = collections.defaultdict(int)
+
+    # Set left pointer to 0
+    l_point = 0
+
+    # Use matches to count how often
+    # needed characters are fulfilled
+    matches = 0
+
+    # Array that returns 
+    # when anagarams start
+    ret_arr = []
+
+    # Walk up with right pointer
+    for r_point, r_char in enumerate(s):
+        # For the sake of efficiency
+        # If r_char is not in sub_count
+        # close the window, clear all window_chars
+        # and set matches to 0. Then continue
+        if r_char not in sub_count:
+            l_point = r_point + 1
+            window_chars.clear()
+            matches = 0
+            continue
+
+        # If r_char in sub_count.
+        # Start counting it in the window
+        window_chars[r_char] += 1
+
+        # If you get enough of one character,
+        # increment the count of matched characters
+        if window_chars[r_char] == sub_count[r_char]:
+            matches += 1 
+
+        # r_point, and r_point-(len(sub)-1) is the
+        # bounds of the window.
+        # If the left pointer is falling behind, 
+        # it needs to catch up.
+        while l_point < (r_point-(len(sub)-1)):
+            l_char = s[l_point]
+
+            # We are removing characters in the window
+            # So if before it was enough to satisfy the
+            # sub_count requirement, decrement matches
+            if window_chars[l_char] == sub_count[l_char]:
+                matches -= 1
+
+            # Decriment the count of l_char in window_chars 
+            window_chars[l_char] -= 1
+
+            # move left pointer up
+            l_point += 1
+
+        # If the amount characters needed is matched
+        # then append the left pointer to ret_arr
+        if matches == len(sub_count):
+            ret_arr.append(l_point)
+
+    return ret_arr
 
 def max_frequency(arr, k, *args):
     ''' return max values equal each other by incrementing
@@ -286,8 +337,45 @@ def max_frequency(arr, k, *args):
 
     return max_freq
 
+def min_sum_subarray_size(nums, target):
+    l_point = 0
+
+    running_sum = 0
+    min_sub = float('inf')
+
+    for r_point, r_val in enumerate(nums):
+        running_sum += r_val
+
+        while running_sum >= target:
+            min_sub = min(r_point-(l_point-1), min_sub)
+        
+            l_val = nums[l_point]
+            
+            running_sum -= l_val
+
+            l_point += 1
+        
+    return min_sub if min_sub != float('inf') else 0
+
+def repeating_patterns_k_length(s, k):
+    
+    patterns = set()
+
+    ret_set = set()
+
+    for i in range(k-1, len(s)):
+
+        window = s[i-(k-1):i+1]
+
+        if window in patterns:
+            ret_set.add(window)
+        else:
+            patterns.add(window)
+
+    return list(ret_set)
+
 
 if __name__ == '__main__':
     # peaks_valleys(max_profit_multiple)
-    # strings(count_longest_substring_with_k_unique_chars, 2)
-    nums(max_frequency, 5)
+    strings(find_anagrams_of_p, 'bb')
+    # nums(max_frequency, 5)
