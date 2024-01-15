@@ -1,4 +1,5 @@
 from collections import deque
+import collections
 
 from tests import simple_test_tree_root, complex_test_tree_root, edge_cases, test_delete, test_tree_sum
 
@@ -716,6 +717,29 @@ def lowest_common_ancestor_iterate(curr_node,
     # their is no common ancestor.
     return None
 
+
+def get_rightmost_nodes(root):
+    if not root:
+        return []
+
+    next_level = collections.deque([root])
+    right_stack = []
+
+    while next_level:
+        curr_level = next_level
+        next_level = collections.deque()
+
+        while curr_level:
+            curr_node = curr_level.popleft()
+
+            if curr_node.left:
+                next_level.append(curr_node.left)
+            if curr_node.right:
+                next_level.append(curr_node.right)
+
+        right_stack.append(curr_node.val)
+
+    return right_stack
 
 if __name__ == '__main__':
     root = complex_test_tree_root()
