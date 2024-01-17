@@ -22,3 +22,35 @@ def custom_sort_string(s, order):
         ret_str = ret_str + i*string_count[i]
 
     return ret_str
+
+def add_strings(s_1, s_2):
+    if len(s_1) >= len(s_2):
+        main, sec = s_1, s_2
+    else:
+        main, sec = s_2, s_1
+
+    p_1, p_2 = len(main)-1, len(sec)-1
+
+    ret_str = ''
+    remainder = 0
+
+    while p_1 >= 0:
+        if p_2 >= 0:
+            temp_sum = int(main[p_1]) + int(sec[p_2]) + remainder
+            ret_str = str(temp_sum%10) + ret_str
+
+            remainder = temp_sum//10
+        else:
+            temp_sum = int(main[p_1]) + remainder
+            ret_str = str(temp_sum%10) + ret_str
+
+            remainder = temp_sum//10
+
+        p_1 -= 1
+        p_2 -= 1
+
+    if remainder:
+        ret_str = str(remainder) + ret_str
+
+    return ret_str
+

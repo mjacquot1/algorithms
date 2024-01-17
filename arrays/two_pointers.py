@@ -1,18 +1,39 @@
 def two_sum(nums, target, *args):
-    ''' Given an array of integers nums and aa target,
+    ''' Given an array of integers nums and a target,
         return indices of two numbers that add up to target '''   
-    # 'value' : index
-    add_hash = {}
+    # Since we know the array is sorted, we can start from both ends
+    #   and see if the value of the two pointed variables equal the
+    #   target.
+    # The idea behind this is that both ends together should equal
+    #   more than the target, and we just need to either move down 
+    #   (decrement) the sum or move up (increment) the sum until we 
+    #   either find the values that equal the sum, of our pointers 
+    #   meet and its impossible.
 
-    for i, val in enumerate(nums):
-        # If val + (some number) == target
-        # Check to see if (some number) is in the hasg
-        # By checking for target - val
-        if target - val in add_hash:
-            return [i, add_hash[target-val]]
-        # Keep track of numbers encountered
+    # Start at both ends
+    l_p, r_p = 0, len(nums)-1
+
+    # We do '<' becuase if they ever meet,
+    #   then only 1 number is actually being looked at
+    while l_p < r_p:
+        # Sum the pointed numbers
+        curr_sum = nums[l_p] + nums[r_p]
+
+        # Target is found!
+        if curr_sum == target:
+            return [l_p, r_p]
+
+        # If the sum is less than the target,
+        #   move up (increment) the smaller number
+        elif curr_sum < target:
+            l_p += 1
+        # Else, move down (decrement) the larger number
         else:
-            add_hash[val] = i
+            r_p -= 1
+
+    return False
+
+
 
 def move_zeroes(nums):
     ''' Given an integer array nums, move all 0's to the end of it while 

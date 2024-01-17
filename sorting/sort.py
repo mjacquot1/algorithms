@@ -56,8 +56,11 @@ def quick_sort_recursive(arr, low, high):
         mid = low + (high-low)//2
         pivot = arr[mid]
         
-        # The element we will swap with
-        swap = low
+        # The element we will swap with.
+        # We start at low-1 due to very rare edge cases, and we only
+        #   increment it if we are about to use it. This stops the
+        #   swap index from ever going out of bounds.
+        swap = low - 1
         
         # Swap mid and high values
         # to get the pivot out of the way
@@ -69,11 +72,12 @@ def quick_sort_recursive(arr, low, high):
             # If arr[i] <= pivot, send it
             # to the swap and then swap += 1
             if arr[i] <= pivot:
-                arr[i], arr[swap] = arr[swap], arr[i]
                 swap += 1
+                arr[i], arr[swap] = arr[swap], arr[i]
         
         # Then swap the pivot between swap index and high
         # (We know arr[swap] > pivot by this point)
+        swap += 1
         arr[swap], arr[high] = arr[high], arr[swap]
     
         return swap

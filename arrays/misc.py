@@ -43,3 +43,23 @@ def interval_intersections(arr_1, arr_2):
             y += 1
 
     return ret_arr
+
+def max_sub_array_val(nums):
+    # Setup a max to return
+    max_val = float('-inf')
+
+    # Keep a running sum of values seen
+    running_sum = 0
+
+    for i in nums:
+        # If i is decreased by the running sum
+        #   then that means the running sum is negative.
+        # You're better off restarting it at i
+        if i >= (i + running_sum):
+            running_sum = i
+        else:
+            running_sum += i
+        
+        max_val = max(running_sum, max_val)
+
+    return max_val
