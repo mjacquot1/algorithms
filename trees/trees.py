@@ -741,6 +741,229 @@ def get_rightmost_nodes(root):
 
     return right_stack
 
+def two_sum_bst(root, target):
+    if not root:
+        return False
+
+    seen = set()
+
+    stack = []
+    node = root
+
+    while True:
+        if node:
+            stack.append(node)
+            node = node.left
+
+        elif stack:
+            node = stack.pop()
+            
+            if target - node.val in seen:
+                return True
+
+            seen.add(node.val)
+
+            node = node.right
+
+        else:
+            return False
+
+
+def diameter_of_binary_tree(root):
+    ''' The diameter of a binary tree is the length of the 
+        longest path between any two nodes in a tree '''
+
+    def dfs(node, max_path):
+
+        # If this isn't a node,
+        #   theres no depth to return
+        if not node:
+            return 0
+
+        # Find the maximum depths on the left and the right
+        max_l = dfs(node.left, max_path)
+        max_r = dfs(node.right, max_path)
+
+        # Get the diameter of the current node.
+        # IE, the longest path on the left and
+        #   plus the longest path on the right.
+        # We do not + 1 here for the current node
+        #   because we don't consider the node were
+        #   starting from as a step in the path combined path.
+        diameter = max_l + max_r
+
+        # Track the maximum diameter
+        max_path[0] = max(diameter, max_path[0])
+
+        # Now return the maximum depth on either side,
+        #   and + 1 to it to account for the current node's height.
+        return max(max_l, max_r) + 1
+
+    # Set up a mutable variable to 
+    #   track the max diameter
+    max_path = [0]
+    dfs(root, max_path)
+    
+    return  max_path[0]
+
+def invert_binary_tree_recursive(root):
+    ''' Take a binary tree, and invert '''
+
+    #          6                   6
+    #        /   \                / \
+    #       5     4      -->     4   5
+    #      / \     \            /   / \
+    #     1   9     11         11  9   1
+    # 
+    # The method is actually easier than expected.
+    # Just flip the left & right for each node 
+    #   while moving your way down. 
+
+    def dfs(node):
+        # If you hit a blank, return
+        if not node:
+            return
+
+        # Swap branches
+        node.left, node.right = node.right, node.left
+
+        # move your way down the branches
+        dfs(node.left)
+        dfs(node.right)
+
+    # Run recursion
+    dfs(root)
+
+    return root
+
+def invert_binary_tree_iterative(root):
+    ''' Take a binary tree, and invert '''
+
+    #          6                   6
+    #        /   \                / \
+    #       5     4      -->     4   5
+    #      / \     \            /   / \
+    #     1   9     11         11  9   1
+    # 
+    # The method is actually easier than expected.
+    # Just flip the left & right for each node 
+    #   while moving your way down. 
+
+    if not root:
+        return
+
+    # set up a breadth-first-search stack
+    q = collections.deque([root])
+
+    while q:
+        # Get the node
+        node = q.popleft()
+
+        # Swap branches
+        node.left, node.right = node.right, node.left
+        
+        if node.left:
+            q.append(node.left)
+        if node.right:
+            q.append(node.right)
+
+    return root
+
+def merge_trees_recursive(root_1, root_2):
+    ''' Imagine stacking one binary tree on top of another. 
+        Add overlapping nodes, and extend missing ones.'''
+
+    def dfs(node_1, node_2):
+        
+        # If one of the nodes are missing,
+        #   then we don't have to combine anything.
+        if not node_1 or not node_2:
+            return
+
+        # Past this point, we know theres
+        #   two nodes that overlap
+
+        # Increase node_1 by node_2, 
+        node_1.val += node_2.val
+
+        # If there no left branch of
+        #   the main tree node, make it
+        #   equal the left of the 2nd tree.
+        # This will be either another branch,
+        #   or None 
+        if not node_1.left:
+            node_1.left = node_2.left
+
+        # Else, append both left branches of
+        #   both trees to be combined
+        else:
+            dfs(node_1.left, node_2.left)
+
+
+        # Do the same for the right
+        if not node_1.right:
+            node_1.right = node_2.right
+        else:
+            dfs(node_1.right, node_2.right)
+        
+    # Run recursive function
+    dfs(root_1, root_2)
+
+    # Return root1 or root2
+    #   In case a tree is empty
+    return root_1 or root_2
+
+def merge_trees_iterative(root_1, root_2):
+    ''' Imagine stacking one binary tree on top of another. 
+    Add overlapping nodes, and extend missing ones.'''
+
+    # If either tree is blank, 
+    #   return the non-blank or none
+    if not (root_1 and root_2):
+        return root_1 or root_2
+
+    # Start a stack to navigate with
+    #   the roots of both trees
+    stack = [(root_1, root_2)]
+
+    while stack:
+        # Get both nodes, were on the same
+        #   relative part of the tree
+        node_1, node_2 = stack.pop()
+
+        # If one of the nodes are missing,
+        #   then we don't have to combine anything.
+        if not node_1 or not node_2:
+            continue
+
+        # Past this point, we know theres
+        #   two nodes that overlap
+
+        # Increase node_1 by node_2, 
+        node_1.val += node_2.val
+
+        # If there no left branch of
+        #   the main tree node, make it
+        #   equal the left of the 2nd tree.
+        # This will be either another branch,
+        #   or None 
+        if not node_1.left:
+            node_1.left = node_2.left
+        
+        # Else, append both left branches of
+        #   both trees to be combined
+        else:
+            stack.append((node_1.left, node_2.left))
+
+        # Do the same for the right
+        if not node_1.right:
+            node_1.right = node_2.right
+        else:
+            stack.append((node_1.right, node_2.right)) 
+
+    return root_1
+
+
 if __name__ == '__main__':
     root = complex_test_tree_root()
     # print(in_order_traversal_iterative(root))
